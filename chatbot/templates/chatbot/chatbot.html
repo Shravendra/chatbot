@@ -1,0 +1,320 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>MVO-AI - ChatBot</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <link href="{% static 'img/favicon.ico' %}" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+      <style>
+        body {
+          background-color: #fff;
+          background-repeat: no-repeat;
+          background-size: 100% 100%;
+          background-position: center center;
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+        }
+        /* Chat container */
+        .chat-container {
+          position: relative;
+          border: 1px solid #ccc;
+          background-color: lightblue;
+          border-radius: 5px;
+          padding: 10px;
+          margin: 10px auto;
+          width: 800px;
+          height: 500px;
+          overflow-y: scroll;
+          box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+          scroll-behavior: smooth;
+        }
+
+        /* User chat bubble */
+        .user-bubble {
+          background-color: #cce6ff;
+          color: black;
+          padding: 10px;
+          border-radius: 20px;
+          float: right;
+          clear: both;
+          margin-bottom: 10px;
+          animation: fade-in 0.5s ease;
+          box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Chatbot chat bubble */
+        .chatbot-bubble {
+          background-color: white;
+          color: black;
+          padding: 10px;
+          border-radius: 20px;
+          float: left;
+          clear: both;
+          margin-bottom: 10px;
+          animation: fade-in 0.5s ease;
+          box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .chatbot-bubble.loading:after {
+          content: '';
+          display: block;
+          position: absolute;
+          border-radius: 50%;
+          border: 2px solid #ddd;
+          border-top-color: #04AA6D;
+          width: 16px;
+          height: 16px;
+          top: -10px;
+          left: -10px;
+          animation: spin 1s linear infinite;
+        }
+
+        /* Loading animation */
+        .loader {
+          border: 10px solid #f3f3f3; /* Light grey */
+          border-top: 10px solid #3498db; /* Blue */
+          border-radius: 50%;
+          width: 30px;
+          height: 30px;
+          animation: spin 2s linear infinite;
+          position: absolute;
+          float: left;
+          margin: 0 auto;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+        }
+
+        /* Form styling */
+        #query-form {
+          display: flex;
+          margin: 10px auto;
+          width: 800px;
+        }
+
+        #query {
+          flex: 1;
+          padding: 10px;
+          border-radius: 5px 0 0 5px;
+          border: none;
+          font-size: 16px;
+        }
+
+        button[type="submit"] {
+          background-color: #04AA6D;
+          color: white;
+          border: none;
+          padding: 10px 15px;
+          border-radius: 1px 5px 5px 1px;
+          font-size: 16px;
+          cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+          background-color: #3e8e41;
+        }
+        .file-input {
+            display: inline-block;
+            background-color: #04AA6D;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .file-input:hover {
+            background-color: #3e8e41;
+            
+        }
+
+        .upload-btn {
+            background-color: #1363C6;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .upload-btn:hover {
+            background-color: #1c4ec9;
+        }
+
+        .upload-card {
+            background-color: #cce6ff;
+            color: black;
+            padding: 10px;
+            border-radius: 5px;
+            float: left;
+            clear: both;
+            margin-bottom: 10px;
+            animation: fade-in 0.5s ease;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .file{
+          float: left;
+          margin-left: 280px;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      </style>
+      <body>
+        
+        <!-- Navbar Start -->
+    <div class="container-xxl position-relative p-0">
+        <nav class="navbar navbar-expand-lg navbar-light px-4 px-lg-1 py-3 py-lg-1">
+            <a href="" class="navbar-brand p-3">
+                <img src="" alt="Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="fa fa-bars"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto py-0">
+                </div>
+                <button type="button" class="btn text-secondary ms-3" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                    <img src="static/img/logout-1.png" alt="Logout" width="40" height="45">
+                </button> 
+            </div>
+        </nav>
+        <div class="container-xxl py-5 bg-primary hero-header mb-5">
+            <div class="container my-0 py-0 px-lg-0">
+                <div class="row g-5 py-5">  
+                  <div class="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
+                    <h3 class="display-6 text-white mb-7 animated slideInRight">Chat with our Bot</h3>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+      <!-- Navbar End -->
+     
+  
+
+        <div class="chat-container">
+          <div id="chat"></div>
+          <div class="chatbot-bubble loading"><div class="loader"></div></div>
+        </div>
+        
+        <form method="post" id="query-form">
+          {% csrf_token %}
+          <input type="text" id="query" name="query" placeholder="Type your message here..." required>
+          <button type="submit">Send</button>
+        </form>
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+          <script>
+            $(document).ready(function() {
+              $('.chatbot-bubble.loading').hide();
+              
+              $('#query-form').on('submit', function(e) {
+                e.preventDefault();
+                var query = $('#query').val();
+                $('#chat').append('<div class="user-bubble">' + query + '</div>');
+                $('#query').val('');
+                $('.chatbot-bubble.loading').show();
+                
+                $.ajax({
+                  url: '{% url "process_query" %}',
+                  type: 'POST',
+                  data: JSON.stringify({ 'query': query }),
+                  contentType: 'application/json; charset=utf-8',
+                  dataType: 'json',
+                  success: function(data) {
+                    var response = data.response;
+                    var words = response.split(' ');
+                    var i = 0;
+                    $('.chatbot-bubble.loading').hide();
+                    $('#chat').append('<div class="chatbot-bubble"></div>');
+                    var chatbotBubble = $('#chat').children().last();
+                    var interval = setInterval(function() {
+                      chatbotBubble.text(chatbotBubble.text() + words[i] + ' ');
+                      i++;
+                      if (i >= words.length) {
+                        clearInterval(interval);
+                        chatbotBubble.removeClass('loading');
+                      }
+                    }, 200);
+                  }
+                });
+              });
+            });
+          </script>   
+      </body>
+ <!-- Footer Start -->
+ <div class="container-fluid bg-primary text-light footer mt-5 pt-5 wow fadeIn" data-wow-delay="0.1s">
+  <div class="container px-lg-5">
+      <div class="copyright">
+          <div class="row">
+              <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                  &copy; <a class="border-bottom" href="#">2023</a>, All Right Reserved. 
+    
+    Designed By <a class="border-bottom" href="#">Shravendra</a>
+              </div>
+              <div class="col-md-6 text-center text-md-end">
+                  <div class="footer-menu">
+                      <a href="">Home</a>
+                      <a href="">Cookies</a>
+                      <a href="">Help</a>
+                      <a href="">FQAs</a>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+<!-- Back to Top -->
+<a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top pt-2"><i class="bi bi-arrow-up"></i></a>
+
+
+<!-- JavaScript Libraries -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="static/lib/wow/wow.min.js"></script>
+<script src="static/lib/easing/easing.min.js"></script>
+<script src="static/lib/waypoints/waypoints.min.js"></script>
+<script src="static/lib/counterup/counterup.min.js"></script>
+<script src="static/lib/owlcarousel/owl.carousel.min.js"></script>
+
+<!-- Template Javascript -->
+<script src="static/js/main.js"></script>
+</body>
+
+
+</html>
